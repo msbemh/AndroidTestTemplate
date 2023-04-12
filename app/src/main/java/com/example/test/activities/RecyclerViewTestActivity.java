@@ -1,4 +1,4 @@
-package com.example.test;
+package com.example.test.activities;
 
 import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
@@ -11,6 +11,8 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.TextView;
 import android.widget.Toast;
+
+import com.example.test.R;
 
 import java.util.ArrayList;
 import java.util.List;

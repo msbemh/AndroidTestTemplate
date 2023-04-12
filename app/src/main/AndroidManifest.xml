@@ -11,11 +11,22 @@
         android:supportsRtl="true"
         android:theme="@style/Theme.Test"
         tools:targetApi="31">
+        <service
+            android:name=".services.MyService"
+            android:enabled="true"
+            android:exported="true"></service>
+        <service
+            android:name=".services.MyIntentService"
+            android:exported="false" />
+
         <activity
-            android:name=".RecyclerViewTestActivity2"
+            android:name=".activities.ServiceTestActivity"
             android:exported="false" />
         <activity
-            android:name=".RecyclerViewTestActivity"
+            android:name=".activities.RecyclerViewTestActivity2"
+            android:exported="false" />
+        <activity
+            android:name=".activities.RecyclerViewTestActivity"
             android:exported="false" />
         <activity
             android:name=".MainActivity"

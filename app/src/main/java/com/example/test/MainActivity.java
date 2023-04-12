@@ -6,7 +6,6 @@ import androidx.recyclerview.widget.RecyclerView;
 
 import android.content.Intent;
 import android.os.Bundle;
-import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.Menu;
 import android.view.MenuInflater;
@@ -16,9 +15,12 @@ import android.view.ViewGroup;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import com.example.test.activities.RecyclerViewTestActivity;
+import com.example.test.activities.RecyclerViewTestActivity2;
+import com.example.test.activities.ServiceTestActivity;
+
 import java.util.ArrayList;
 import java.util.HashMap;
-import java.util.List;
 import java.util.Map;
 
 public class MainActivity extends AppCompatActivity {
@@ -35,6 +37,7 @@ public class MainActivity extends AppCompatActivity {
         mMenuList = new ArrayList<>();
         addItem("리사이클러뷰", "클릭 인터페이스 직접 구현", RecyclerViewTestActivity.class);
         addItem("리사이클러뷰", "Event Bus를 이용한 클릭 리스너", RecyclerViewTestActivity2.class);
+        addItem("서비스", "Service", ServiceTestActivity.class);
 
         MyRecyclerAdapter adapter = new MyRecyclerAdapter(mMenuList);
         recyclerView.setAdapter(adapter);
