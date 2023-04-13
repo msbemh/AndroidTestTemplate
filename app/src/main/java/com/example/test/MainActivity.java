@@ -15,9 +15,12 @@ import android.view.ViewGroup;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import com.example.test.activities.AsyncTaskActivity;
+import com.example.test.activities.MemoListActivity;
 import com.example.test.activities.RecyclerViewTestActivity;
 import com.example.test.activities.RecyclerViewTestActivity2;
 import com.example.test.activities.ServiceTestActivity;
+import com.example.test.activities.ThreadHandlerActivity;
 
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -37,7 +40,10 @@ public class MainActivity extends AppCompatActivity {
         mMenuList = new ArrayList<>();
         addItem("리사이클러뷰", "클릭 인터페이스 직접 구현", RecyclerViewTestActivity.class);
         addItem("리사이클러뷰", "Event Bus를 이용한 클릭 리스너", RecyclerViewTestActivity2.class);
-        addItem("서비스", "Service", ServiceTestActivity.class);
+        addItem("서비스", "IntentService, Service, BindService", ServiceTestActivity.class);
+        addItem("스레드", "Thread에서 UI 갱신은 Handler를 이용", ThreadHandlerActivity.class);
+        addItem("AsyncTask", "(deprecated) Background 작업 및 UI 갱신 방법 중 하나", AsyncTaskActivity.class);
+        addItem("메모 만들어 보기", "activity 결과 받기(신규), Context Menu(RecyclerView), FloatButton, Option Menu", MemoListActivity.class);
 
         MyRecyclerAdapter adapter = new MyRecyclerAdapter(mMenuList);
         recyclerView.setAdapter(adapter);
