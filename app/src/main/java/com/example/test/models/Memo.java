@@ -1,10 +1,23 @@
 package com.example.test.models;
 
-public class Memo {
+import java.io.Serializable;
+
+public class Memo implements Serializable {
+    private String uuid;
+
+    public String getUuid() {
+        return uuid;
+    }
+
+    public void setUuid(String uuid) {
+        this.uuid = uuid;
+    }
+
     private String title;
     private String content;
 
-    public Memo(String title, String content) {
+    public Memo(String uuid, String title, String content) {
+        this.uuid = uuid;
         this.title = title;
         this.content = content;
     }

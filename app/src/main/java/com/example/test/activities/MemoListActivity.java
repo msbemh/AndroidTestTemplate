@@ -37,14 +37,19 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.UUID;
 
 public class MemoListActivity extends AppCompatActivity {
 
     private static final String TAG = MemoListActivity.class.getSimpleName();
     private static final int CONTEXT_MENU_DELETE = 0;
+    public static final int ACTION_MEMO_CREATE = 1;
+    public static final int ACTION_MEMO_EDIT = 2;
+    public static final int RESULT_EDIT_OK = 3;
 
     private List<Memo> data;
     private MyRecyclerAdapter adapter;
+    private ActivityResultLauncher activityResultLauncher;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -70,17 +75,29 @@ public class MemoListActivity extends AppCompatActivity {
          * 결과를 받을 수 있도록 처리해줌.
          * 결과 콜백과 Activity 를 분리시켜 줬기 때문에 가능
          */
-        ActivityResultLauncher activityResultLauncher = registerForActivityResult(new ActivityResultContracts.StartActivityForResult(), new ActivityResultCallback<ActivityResult>() {
+        activityResultLauncher = registerForActivityResult(new ActivityResultContracts.StartActivityForResult(), new ActivityResultCallback<ActivityResult>() {
             @Override
             public void onActivityResult(ActivityResult result) {
+                // 생성 성공
                 if(result.getResultCode() == RESULT_OK){
                     Intent intent = result.getData();
                     String title = intent.getStringExtra("title");
                     String content = intent.getStringExtra("content");
-                    data.add(new Memo(title, content));
+                    data.add(new Memo(getUUID(), title, content));
                     adapter.notifyDataSetChanged();
+                // 취소
                 }else if(result.getResultCode() == RESULT_CANCELED){
                     Log.d(TAG, "취소");
+                // 수정 성공
+                }else if(result.getResultCode() == RESULT_EDIT_OK){
+                    Intent intent = result.getData();
+                    String title = intent.getStringExtra("title");
+                    String content = intent.getStringExtra("content");
+                    String uuid = intent.getStringExtra("uuid");
+                    Memo memo = data.stream().filter(m -> m.getUuid().equals(uuid)).findFirst().orElseGet(null);
+                    memo.setContent(content);
+                    memo.setTitle(title);
+                    adapter.notifyDataSetChanged();
                 }
             }
         });
@@ -94,11 +111,16 @@ public class MemoListActivity extends AppCompatActivity {
             @Override
             public void onClick(View view) {
                 Intent intent = new Intent(MemoListActivity.this, MemoDetailActivity.class);
+                intent.putExtra("action", ACTION_MEMO_CREATE);
                 // 다른 활동 시작 및 결과 받기 호출
                 activityResultLauncher.launch(intent);
             }
         });
 
+    }
+
+    private String getUUID() {
+        return UUID.randomUUID().toString();
     }
 
     @Override
@@ -112,8 +134,6 @@ public class MemoListActivity extends AppCompatActivity {
         super.onStop();
         EventBus.getDefault().unregister(this);
     }
-
-
 
     /**
      * [Context 메뉴]
@@ -155,8 +175,14 @@ public class MemoListActivity extends AppCompatActivity {
      */
     @Subscribe(threadMode = ThreadMode.MAIN)
     public void onMessageEvent(MessageEvent event) {
+        int position = event.position;
         // Do something
-        Toast.makeText(this, event.position+"", Toast.LENGTH_SHORT).show();
+        Intent intent = new Intent(MemoListActivity.this, MemoDetailActivity.class);
+        intent.putExtra("action", ACTION_MEMO_EDIT);
+        intent.putExtra("data", data.get(position));
+        // 다른 활동 시작 및 결과 받기 호출
+        activityResultLauncher.launch(intent);
+        //Toast.makeText(this, event.position+"", Toast.LENGTH_SHORT).show();
     }
 
     /**
