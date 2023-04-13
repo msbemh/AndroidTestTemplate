@@ -5,10 +5,12 @@ import androidx.activity.result.ActivityResultCallback;
 import androidx.activity.result.ActivityResultLauncher;
 import androidx.activity.result.contract.ActivityResultContracts;
 import androidx.annotation.NonNull;
+import androidx.appcompat.app.AlertDialog;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
+import android.content.DialogInterface;
 import android.content.Intent;
 import android.os.Bundle;
 import android.util.Log;
@@ -119,12 +121,28 @@ public class MemoListActivity extends AppCompatActivity {
      */
     @Override
     public boolean onContextItemSelected(MenuItem item) {
-        int position = item.getOrder();
+        final int position = item.getOrder();
         switch (item.getItemId()) {
             case CONTEXT_MENU_DELETE:
-                data.remove(data.get(position));
-                adapter.notifyDataSetChanged();
-                Toast.makeText(MemoListActivity.this, "삭제가 완료 됐습니다.",Toast.LENGTH_SHORT).show();
+                /**
+                 * [AlertDialog]
+                 * 삭제, 확인 Dialog 띄우기
+                 */
+                AlertDialog.Builder builder = new AlertDialog.Builder(this);
+                builder.setMessage("정말 삭제 하시겠습니까?")
+                        .setTitle("확인")
+                        .setIcon(R.mipmap.ic_launcher);
+                // 긍정 버튼
+                builder.setPositiveButton("삭제", new DialogInterface.OnClickListener() {
+                    @Override
+                    public void onClick(DialogInterface dialogInterface, int i) {
+                        // 삭제 시키기
+                        deleteMemo(position);
+                    }
+                });
+                // 부정 버튼
+                builder.setNegativeButton("취소", null);
+                builder.show();
                 return true;
             default:
                 return super.onContextItemSelected(item);
@@ -151,6 +169,12 @@ public class MemoListActivity extends AppCompatActivity {
             this.view = view;
             this.position = position;
         }
+    }
+
+    private void deleteMemo(int position){
+        data.remove(data.get(position));
+        adapter.notifyDataSetChanged();
+        Toast.makeText(MemoListActivity.this, "삭제가 완료 됐습니다.",Toast.LENGTH_SHORT).show();
     }
 
     private class MyRecyclerAdapter extends RecyclerView.Adapter<MyRecyclerAdapter.ViewHolder>{
