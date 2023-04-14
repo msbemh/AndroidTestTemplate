@@ -16,6 +16,8 @@ import android.widget.TextView;
 import android.widget.Toast;
 
 import com.example.test.activities.AsyncTaskActivity;
+import com.example.test.activities.CustomDialogActivity;
+import com.example.test.activities.FragmentActivity;
 import com.example.test.activities.MemoListActivity;
 import com.example.test.activities.RecyclerViewTestActivity;
 import com.example.test.activities.RecyclerViewTestActivity2;
@@ -44,6 +46,8 @@ public class MainActivity extends AppCompatActivity {
         addItem("스레드", "Thread에서 UI 갱신은 Handler를 이용", ThreadHandlerActivity.class);
         addItem("AsyncTask", "(deprecated) Background 작업 및 UI 갱신 방법 중 하나", AsyncTaskActivity.class);
         addItem("메모 만들어 보기", "activity 결과 받기(신규), Context Menu(RecyclerView), FloatButton, Option Menu", MemoListActivity.class);
+        addItem("커스텀 다이얼 로그", "custom dialog", CustomDialogActivity.class);
+        addItem("프래그먼트", "Fragment Test", FragmentActivity.class);
 
         MyRecyclerAdapter adapter = new MyRecyclerAdapter(mMenuList);
         recyclerView.setAdapter(adapter);
