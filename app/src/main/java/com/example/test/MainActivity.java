@@ -1,11 +1,16 @@
 package com.example.test;
 
+import androidx.activity.result.ActivityResultCallback;
+import androidx.activity.result.ActivityResultLauncher;
+import androidx.activity.result.contract.ActivityResultContracts;
 import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.recyclerview.widget.RecyclerView;
 
+import android.Manifest;
 import android.content.Intent;
 import android.os.Bundle;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.Menu;
 import android.view.MenuInflater;
@@ -18,11 +23,13 @@ import android.widget.Toast;
 import com.example.test.activities.AsyncTaskActivity;
 import com.example.test.activities.CustomDialogActivity;
 import com.example.test.activities.FragmentActivity;
+import com.example.test.activities.GalleryActivity;
 import com.example.test.activities.MemoListActivity;
 import com.example.test.activities.RecyclerViewTestActivity;
 import com.example.test.activities.RecyclerViewTestActivity2;
 import com.example.test.activities.ServiceTestActivity;
 import com.example.test.activities.ThreadHandlerActivity;
+import com.example.test.activities.ViewPagerActivity;
 
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -35,6 +42,7 @@ public class MainActivity extends AppCompatActivity {
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+
         setContentView(R.layout.activity_main);
 
         RecyclerView recyclerView = (RecyclerView) findViewById(R.id.recyclerViewMain);
@@ -48,6 +56,8 @@ public class MainActivity extends AppCompatActivity {
         addItem("메모 만들어 보기", "activity 결과 받기(신규), Context Menu(RecyclerView), FloatButton, Option Menu", MemoListActivity.class);
         addItem("커스텀 다이얼 로그", "custom dialog", CustomDialogActivity.class);
         addItem("프래그먼트", "Fragment Test", FragmentActivity.class);
+        addItem("View Pager2", "View Pager2, TabLayout", ViewPagerActivity.class);
+        addItem("Gallery", "cursorAdapter, gridView 이용", GalleryActivity.class);
 
         MyRecyclerAdapter adapter = new MyRecyclerAdapter(mMenuList);
         recyclerView.setAdapter(adapter);

@@ -30,6 +30,16 @@ public class FragmentActivity extends AppCompatActivity {
          * Transaction Manager 를 이용하여 Fragment 를 동적으로 추가
          */
         ColorFragment colorFragment2 = new ColorFragment();
+
+        // 이렇게 bundle 과 argument 를 이용해서 전달할 수 있다.
+        Bundle bundle = new Bundle();
+        bundle.putInt("color", Color.YELLOW);
+        bundle.putString("text", "글자");
+        colorFragment2.setArguments(bundle);
+
+        // 팩토리 패턴을 활용한 프래그먼트 생성
+        ColorFragment colorFragment3 = ColorFragment.newInstance(Color.BLUE);
+
         fragmentManager.beginTransaction()
                 .add(R.id.container, colorFragment2)
                 .commit();
