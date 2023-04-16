@@ -1,6 +1,7 @@
 package com.example.test.fragments;
 
 import android.annotation.SuppressLint;
+import android.content.Intent;
 import android.database.Cursor;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
@@ -23,6 +24,8 @@ import android.widget.TextView;
 import com.bumptech.glide.Glide;
 import com.example.test.R;
 import com.example.test.activities.MusicPlayerActivity;
+import com.example.test.models.Song;
+import com.example.test.services.MusicService;
 
 import org.greenrobot.eventbus.EventBus;
 import org.greenrobot.eventbus.Subscribe;
@@ -80,11 +83,11 @@ public class MusicControllerFragment extends Fragment implements View.OnClickLis
     }
 
     @Subscribe
-    public void updateUI(SongFragment.MessageEvent messageEvent){
-        String title = messageEvent.title;
-        String artist = messageEvent.artist;
-        long duration = messageEvent.duration;
-        byte[] imageData = messageEvent.imageData;
+    public void updateUI(Song song){
+        String title = song.title;
+        String artist = song.artist;
+        long duration = song.duration;
+        byte[] imageData = song.imageData;
 
         if(imageData != null){
             Glide.with(this).load(imageData).into(mAlbumImageView);
@@ -111,11 +114,13 @@ public class MusicControllerFragment extends Fragment implements View.OnClickLis
         EventBus.getDefault().unregister(this);
     }
 
+    /**
+     * 재생 버튼 클릭
+     */
     @Override
     public void onClick(View view) {
-        /**
-         * {@link com.example.test.activities.MusicPlayerActivity#clickPlayButton(View)}
-         */
-        EventBus.getDefault().post(view);
+        Intent intent = new Intent(getActivity(), MusicService.class);
+        intent.setAction(MusicService.ACTION_RESUME);
+        getActivity().startService(intent);
     }
 }

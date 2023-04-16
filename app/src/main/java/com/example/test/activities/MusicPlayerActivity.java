@@ -42,11 +42,7 @@ import java.util.Map;
 public class MusicPlayerActivity extends AppCompatActivity {
 
     private static final String TAG = MusicPlayerActivity.class.getSimpleName();
-
     private ViewPager2 mViewPager;
-
-    private MediaPlayer mMediaPlayer;
-
     private MusicPlayerActivity.MyPagerAdapter mAdapter;
 
     /**
@@ -132,67 +128,7 @@ public class MusicPlayerActivity extends AppCompatActivity {
             tab.setText(title);
         }).attach();
 
-        /**
-         * MediaPlayer
-         */
-        mMediaPlayer = new MediaPlayer();
-        mMediaPlayer.setAudioStreamType(AudioManager.STREAM_MUSIC);
-    }
 
-    @Subscribe
-    public void playMusic(SongFragment.MessageEvent messageEvent){
-        Uri uri = messageEvent.uri;
-        try {
-            mMediaPlayer.setDataSource(this, uri);
-            mMediaPlayer.prepareAsync();
-            mMediaPlayer.setOnPreparedListener(new MediaPlayer.OnPreparedListener() {
-                @Override
-                public void onPrepared(MediaPlayer mediaPlayer) {
-                    mMediaPlayer.start();
-
-                    /**
-                     * {@link com.example.test.fragments.MusicControllerFragment#updatePlayButton(Boolean)}  }
-                     */
-                    EventBus.getDefault().post(isPlaying());
-                }
-            });
-        } catch (IOException e) {
-            throw new RuntimeException(e);
-        }
-    }
-
-    @Subscribe
-    public void clickPlayButton(View view){
-        if(isPlaying()){
-            mMediaPlayer.pause();
-        }else{
-            mMediaPlayer.start();
-        }
-
-        /**
-         * {@link com.example.test.fragments.MusicControllerFragment#updatePlayButton(Boolean)}}
-         */
-        EventBus.getDefault().post(isPlaying());
-
-    }
-
-    @Override
-    protected void onStart() {
-        super.onStart();
-        EventBus.getDefault().register(this);
-    }
-
-    @Override
-    protected void onStop() {
-        super.onStop();
-        EventBus.getDefault().unregister(this);
-    }
-
-    public boolean isPlaying() {
-        if(mMediaPlayer != null){
-            return mMediaPlayer.isPlaying();
-        }
-        return false;
     }
 
     public class MyPagerAdapter extends FragmentStateAdapter {

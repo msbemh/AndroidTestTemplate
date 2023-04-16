@@ -69,7 +69,7 @@ public class ArtistFragment extends Fragment {
 
         // 임시 데이터 설정
         for (int i = 0; i < 50; i++){
-            mData.add(new Song("제목" + i, "아티스트" + i));
+            //mData.add(new Song("제목" + i, "아티스트" + i));
         }
 
         // 레이아웃 설정
