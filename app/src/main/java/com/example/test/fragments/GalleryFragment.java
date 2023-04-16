@@ -29,6 +29,7 @@ import android.widget.GridView;
 import android.widget.ImageView;
 import android.widget.TextView;
 
+import com.bumptech.glide.Glide;
 import com.example.test.MainActivity;
 import com.example.test.R;
 
@@ -52,8 +53,7 @@ public class GalleryFragment extends Fragment {
      * 필요한 권한
      */
     private static final String[] PERMISSIONS = {
-            Manifest.permission.READ_MEDIA_IMAGES,
-            Manifest.permission.READ_EXTERNAL_STORAGE
+            Manifest.permission.READ_MEDIA_IMAGES
     };
 
     /**
@@ -199,7 +199,14 @@ public class GalleryFragment extends Fragment {
             String path = cursor.getString(cursor.getColumnIndexOrThrow(MediaStore.Images.Media.DATA));
             Log.d(TAG, "path:" + path);
             Log.d(TAG, "Uri.parse(path):" + Uri.parse(path));
-            viewHolder.imageView.setImageURI(Uri.parse(path));
+
+            /**
+             * UI Thread 에서 image 를 불러 오는 작업이 오래 걸린다.
+             * Glide library 를 사용하자.
+             * Glide 를 사용하면 비동기 로딩(백그라운드, 콜백), 캐싱 등을 처리해 준다.
+             */
+            Glide.with(context).load(path).into(viewHolder.imageView);
+//            viewHolder.imageView.setImageURI(Uri.parse(path));
         }
 
         private class ViewHolder {

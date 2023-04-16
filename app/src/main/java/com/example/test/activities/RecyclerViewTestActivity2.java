@@ -70,7 +70,7 @@ public class RecyclerViewTestActivity2 extends AppCompatActivity {
     /**
      * EventBus 에서 발송할 이벤트
      */
-    private class MessageEvent{
+    public class MessageEvent{
         View view;
         int position;
         public MessageEvent(View view, int position) {

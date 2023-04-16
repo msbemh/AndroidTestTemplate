@@ -25,6 +25,9 @@ import com.example.test.activities.CustomDialogActivity;
 import com.example.test.activities.FragmentActivity;
 import com.example.test.activities.GalleryActivity;
 import com.example.test.activities.MemoListActivity;
+import com.example.test.activities.ModernBackgroundActivity;
+import com.example.test.activities.MusicPlayerActivity;
+import com.example.test.activities.ReceiverActivity;
 import com.example.test.activities.RecyclerViewTestActivity;
 import com.example.test.activities.RecyclerViewTestActivity2;
 import com.example.test.activities.ServiceTestActivity;
@@ -58,6 +61,9 @@ public class MainActivity extends AppCompatActivity {
         addItem("프래그먼트", "Fragment Test", FragmentActivity.class);
         addItem("View Pager2", "View Pager2, TabLayout", ViewPagerActivity.class);
         addItem("Gallery", "cursorAdapter, gridView 이용", GalleryActivity.class);
+        addItem("Receiver", "Receiver", ReceiverActivity.class);
+        addItem("Background Thread Handler", "(Modern) background thread", ModernBackgroundActivity.class);
+        addItem("음악 플레이어", "Music player", MusicPlayerActivity.class);
 
         MyRecyclerAdapter adapter = new MyRecyclerAdapter(mMenuList);
         recyclerView.setAdapter(adapter);
