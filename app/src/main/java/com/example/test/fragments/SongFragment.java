@@ -138,7 +138,7 @@ public class SongFragment extends Fragment {
             @SuppressLint("Range") long mDuration = cursor.getLong(cursor.getColumnIndex(MediaStore.Audio.Media.DURATION));
 
             title = (title == null ? "타이틀" : title);
-            artist = (artist == null ? "아티스트" : artist);
+            artist = "<unknown>".equals(artist) ? "[아티스트 없음]" : artist;
 
             // 미디어 정보
 //            String title = retriever.extractMetadata(MediaMetadataRetriever.METADATA_KEY_TITLE);

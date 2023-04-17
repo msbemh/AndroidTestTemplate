@@ -91,6 +91,8 @@ public class MusicControllerFragment extends Fragment implements View.OnClickLis
 
         if(imageData != null){
             Glide.with(this).load(imageData).into(mAlbumImageView);
+        }else{
+            Glide.with(this).load(R.mipmap.ic_launcher).into(mAlbumImageView);
         }
 
         mTitleTextView.setText(title);

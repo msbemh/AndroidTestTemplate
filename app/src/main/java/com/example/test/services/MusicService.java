@@ -32,8 +32,6 @@ public class MusicService extends Service {
 
         mMediaPlayer = new MediaPlayer();
         mMediaPlayer.setAudioStreamType(AudioManager.STREAM_MUSIC);
-
-        EventBus.getDefault().register(this);
     }
 
     @Override
@@ -57,7 +55,6 @@ public class MusicService extends Service {
         return START_STICKY;
     }
 
-    @Subscribe
     public void playMusic(Song song){
         Uri uri = song.uri;
         try {
@@ -82,6 +79,10 @@ public class MusicService extends Service {
                      * {@link com.example.test.fragments.MusicControllerFragment#updatePlayButton(Boolean)}  }
                      */
                     EventBus.getDefault().post(isPlaying());
+                    /**
+                     * {@link com.example.test.fragments.MusicControllerFragment#updateUI(Song)}  }
+                     */
+                    EventBus.getDefault().post(song);
                 }
             });
         } catch (IOException e) {

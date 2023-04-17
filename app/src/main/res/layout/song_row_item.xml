@@ -17,11 +17,15 @@
             android:layout_width="wrap_content"
             android:textStyle="bold|normal"
             android:textSize="20sp"
+            android:maxLines="1"
+            android:ellipsize="end"
             android:textColor="@color/black"
             android:layout_height="wrap_content"
             android:text="제목"/>
         <TextView
             android:id="@+id/textViewArtist"
+            android:maxLines="1"
+            android:ellipsize="end"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:text="아티스트"/>

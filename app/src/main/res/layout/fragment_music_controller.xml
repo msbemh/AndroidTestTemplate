@@ -23,11 +23,15 @@
         <TextView
             android:id="@+id/title_text"
             android:text="노래 제목"
+            android:maxLines="1"
+            android:ellipsize="end"
             android:layout_width="wrap_content"
             android:layout_height="match_parent"/>
         <TextView
             android:id="@+id/artist_text"
             android:text="가수"
+            android:maxLines="1"
+            android:ellipsize="end"
             android:layout_width="wrap_content"
             android:layout_height="match_parent"/>
     </LinearLayout>
