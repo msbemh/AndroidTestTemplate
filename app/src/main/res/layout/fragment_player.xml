@@ -7,10 +7,12 @@
     tools:context=".fragments.PlayerFragment">
 
     <ImageView
-        android:src="@mipmap/ic_launcher"
+        android:id="@+id/imageView"
         android:layout_width="match_parent"
         android:layout_height="0dp"
-        android:layout_weight="1" />
+        android:layout_weight="1"
+        android:src="@mipmap/ic_launcher" />
+
     <LinearLayout
         android:layout_width="match_parent"
         android:layout_height="wrap_content"

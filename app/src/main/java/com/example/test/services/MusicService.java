@@ -5,16 +5,15 @@ import android.content.Intent;
 import android.media.AudioManager;
 import android.media.MediaPlayer;
 import android.net.Uri;
+import android.os.Binder;
 import android.os.Build;
 import android.os.IBinder;
-import android.view.View;
 
 import androidx.annotation.Nullable;
 
 import com.example.test.models.Song;
 
 import org.greenrobot.eventbus.EventBus;
-import org.greenrobot.eventbus.Subscribe;
 
 import java.io.IOException;
 
@@ -25,6 +24,7 @@ public class MusicService extends Service {
     public static String ACTION_PLAY = "play";
     public static String ACTION_RESUME = "resume";
     private MediaPlayer mMediaPlayer;
+    public Song mSong;
 
     @Override
     public void onCreate() {
@@ -42,7 +42,7 @@ public class MusicService extends Service {
              */
             Song song;
             if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU) {
-                song = (Song) intent.getSerializableExtra("song", Song.class);
+                song = intent.getSerializableExtra("song", Song.class);
             } else {
                 song = (Song) intent.getSerializableExtra("data");
             }
@@ -74,15 +74,16 @@ public class MusicService extends Service {
                 @Override
                 public void onPrepared(MediaPlayer mediaPlayer) {
                     mMediaPlayer.start();
+                    mSong = song;
 
                     /**
-                     * {@link com.example.test.fragments.MusicControllerFragment#updatePlayButton(Boolean)}  }
+                     * {@link com.example.test.fragments.MusicControllerFragment#updateUI(Boolean)}  }
                      */
                     EventBus.getDefault().post(isPlaying());
                     /**
-                     * {@link com.example.test.fragments.MusicControllerFragment#updateUI(Song)}  }
+                     * {@link com.example.test.fragments.MusicControllerFragment#updateMetadata(Song)}  }
                      */
-                    EventBus.getDefault().post(song);
+                    //EventBus.getDefault().post(song);
                 }
             });
         } catch (IOException e) {
@@ -98,7 +99,7 @@ public class MusicService extends Service {
         }
 
         /**
-         * {@link com.example.test.fragments.MusicControllerFragment#updatePlayButton(Boolean)}}
+         * {@link com.example.test.fragments.MusicControllerFragment#updateUI(Boolean)}}
          */
         EventBus.getDefault().post(isPlaying());
 
@@ -111,10 +112,24 @@ public class MusicService extends Service {
         return false;
     }
 
+    // Binder given to clients
+    private final IBinder binder = new LocalBinder();
+
+    /**
+     * Class used for the client Binder.  Because we know this service always
+     * runs in the same process as its clients, we don't need to deal with IPC.
+     */
+    public class LocalBinder extends Binder {
+        public MusicService getService() {
+            // Return this instance of MusicService so clients can call public methods
+            return MusicService.this;
+        }
+    }
+
     @Nullable
     @Override
     public IBinder onBind(Intent intent) {
-        return null;
+        return binder;
     }
 
     @Override

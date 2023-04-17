@@ -54,8 +54,6 @@ public class SongFragment extends Fragment {
         return fragment;
     }
 
-
-
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -83,20 +81,17 @@ public class SongFragment extends Fragment {
         recyclerView.setLayoutManager(linearLayoutManager);
 
         String[] projection = {
-                MediaStore.Audio.Media.IS_MUSIC,
-                MediaStore.Audio.Media.ALBUM_ID,
                 MediaStore.Audio.Media.TITLE,
                 MediaStore.Audio.Media.DATA,
                 MediaStore.Audio.Media.DURATION,
-                MediaStore.Audio.Media.ARTIST,
-                MediaStore.Audio.Media._ID};
+                MediaStore.Audio.Media.ARTIST};
 
         /**
          * Cursor
          */
         Cursor cursor = getActivity().getContentResolver()
                 .query(MediaStore.Audio.Media.EXTERNAL_CONTENT_URI,
-                        projection,
+                        null,
                         null,
                         null,
                         null);
@@ -174,16 +169,6 @@ public class SongFragment extends Fragment {
 
             public ViewHolder(@NonNull View itemView) {
                 super(itemView);
-
-                itemView.setOnClickListener(new View.OnClickListener() {
-                    @Override
-                    public void onClick(View view) {
-                        final int position = getAdapterPosition();
-                        if (position != RecyclerView.NO_POSITION) {
-
-                        }
-                    }
-                });
 
                 textViewTitle = (TextView) itemView.findViewById(R.id.textViewTitle);
                 textViewArtist = (TextView) itemView.findViewById(R.id.textViewArtist);
