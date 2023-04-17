@@ -6,12 +6,21 @@ import android.os.Parcelable;
 
 import java.io.Serializable;
 
-public class Song implements Parcelable, Serializable {
+public class Song implements Serializable, Parcelable {
+    public String audioId;
     public String title;
     public String artist;
     public byte[] imageData;
     public long duration;
     public Uri uri;
+
+    public String getAudioId() {
+        return audioId;
+    }
+
+    public void setAudioId(String audioId) {
+        this.audioId = audioId;
+    }
 
     public String getTitle() {
         return title;
@@ -53,7 +62,8 @@ public class Song implements Parcelable, Serializable {
         this.uri = uri;
     }
 
-    public Song(String title, String artist, byte[] imageData, long duration, Uri uri) {
+    public Song(String audioId, String title, String artist, byte[] imageData, long duration, Uri uri) {
+        this.audioId = audioId;
         this.title = title;
         this.artist = artist;
         this.imageData = imageData;
@@ -68,6 +78,7 @@ public class Song implements Parcelable, Serializable {
 
     @Override
     public void writeToParcel(Parcel dest, int flags) {
+        dest.writeString(this.audioId);
         dest.writeString(this.title);
         dest.writeString(this.artist);
         dest.writeByteArray(this.imageData);
@@ -76,6 +87,7 @@ public class Song implements Parcelable, Serializable {
     }
 
     public void readFromParcel(Parcel source) {
+        this.audioId = source.readString();
         this.title = source.readString();
         this.artist = source.readString();
         this.imageData = source.createByteArray();
@@ -84,6 +96,7 @@ public class Song implements Parcelable, Serializable {
     }
 
     protected Song(Parcel in) {
+        this.audioId = in.readString();
         this.title = in.readString();
         this.artist = in.readString();
         this.imageData = in.createByteArray();

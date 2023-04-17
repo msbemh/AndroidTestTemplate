@@ -150,8 +150,6 @@ public class MusicControllerFragment extends Fragment implements View.OnClickLis
      */
     @Override
     public void onClick(View view) {
-        Intent intent = new Intent(getActivity(), MusicService.class);
-        intent.setAction(MusicService.ACTION_RESUME);
-        getActivity().startService(intent);
+        mService.resumeMusic();
     }
 }

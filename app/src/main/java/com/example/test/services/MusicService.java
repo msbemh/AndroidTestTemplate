@@ -12,10 +12,12 @@ import android.os.IBinder;
 import androidx.annotation.Nullable;
 
 import com.example.test.models.Song;
+import com.example.test.models.SongListMessage;
 
 import org.greenrobot.eventbus.EventBus;
 
 import java.io.IOException;
+import java.util.List;
 
 public class MusicService extends Service {
     public MusicService() {
@@ -25,15 +27,17 @@ public class MusicService extends Service {
     public static String ACTION_RESUME = "resume";
     private MediaPlayer mMediaPlayer;
     public Song mSong;
+    public List<Song> songList;
+    public SongListMessage songListMessage;
 
     @Override
     public void onCreate() {
         super.onCreate();
-
-        mMediaPlayer = new MediaPlayer();
-        mMediaPlayer.setAudioStreamType(AudioManager.STREAM_MUSIC);
     }
 
+    /**
+     * 음악 Item을 클릭 했을 때, 서비스 시작 된다.
+     */
     @Override
     public int onStartCommand(Intent intent, int flags, int startId) {
         if(ACTION_PLAY.equals(intent.getAction())){
@@ -43,27 +47,43 @@ public class MusicService extends Service {
             Song song;
             if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU) {
                 song = intent.getSerializableExtra("song", Song.class);
+                // songList는 1번만 받는다.
+                if(songList == null) {
+                    songListMessage = intent.getSerializableExtra("songList", SongListMessage.class);
+                    songList = songListMessage.songList;
+                }
             } else {
                 song = (Song) intent.getSerializableExtra("data");
+                // songList는 1번만 받는다.
+                if(songList == null) {
+                    songListMessage = (SongListMessage) intent.getSerializableExtra("songList");
+                    songList = songListMessage.songList;
+                }
             }
 
-            playMusic(song);
-        }else if(ACTION_RESUME.equals(intent.getAction())){
-            clickResumeButton();
+            mSong = song;
+            musicStart(song);
         }
-
         return START_STICKY;
     }
 
-    public void playMusic(Song song){
+    public void musicStart(Song song){
         Uri uri = song.uri;
         try {
             /**
-             * 재생 중이라면 일단 꺼버린다.
+             * 미디어 플레이어가 이미 재생중 이라면
+             * 중지시키고 객체를 다시 생성 시킨다.
              */
-            if(mMediaPlayer.isPlaying()) {
+            if(mMediaPlayer != null && mMediaPlayer.isPlaying()) {
                 mMediaPlayer.stop();
                 mMediaPlayer.release();
+                mMediaPlayer = null;
+            }
+
+            /**
+             * 미디어 플레이어 초기화
+             */
+            if(mMediaPlayer == null){
                 mMediaPlayer = new MediaPlayer();
                 mMediaPlayer.setAudioStreamType(AudioManager.STREAM_MUSIC);
             }
@@ -91,7 +111,14 @@ public class MusicService extends Service {
         }
     }
 
-    private void clickResumeButton(){
+    public void release(){
+        mMediaPlayer.stop();
+        mMediaPlayer.release();
+        mMediaPlayer = null;
+    }
+
+
+    public void resumeMusic(){
         if(isPlaying()){
             mMediaPlayer.pause();
         }else{
@@ -136,5 +163,8 @@ public class MusicService extends Service {
     public void onDestroy() {
         super.onDestroy();
         EventBus.getDefault().unregister(this);
+    }
+    public MediaPlayer getMediaPlayer(){
+        return mMediaPlayer;
     }
 }

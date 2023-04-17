@@ -1,8 +1,10 @@
 package com.example.test.fragments;
 
 import android.annotation.SuppressLint;
+import android.content.ComponentName;
 import android.content.Context;
 import android.content.Intent;
+import android.content.ServiceConnection;
 import android.database.Cursor;
 import android.media.MediaMetadataRetriever;
 import android.net.Uri;
@@ -14,6 +16,7 @@ import androidx.fragment.app.Fragment;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
+import android.os.IBinder;
 import android.os.Parcelable;
 import android.provider.MediaStore;
 import android.view.LayoutInflater;
@@ -24,7 +27,13 @@ import android.widget.TextView;
 import com.example.test.R;
 import com.example.test.adapters.CursorRecyclerViewAdapter;
 import com.example.test.models.Song;
+import com.example.test.models.SongListMessage;
 import com.example.test.services.MusicService;
+
+import org.greenrobot.eventbus.EventBus;
+
+import java.util.ArrayList;
+import java.util.List;
 
 public class SongFragment extends Fragment {
 
@@ -37,6 +46,10 @@ public class SongFragment extends Fragment {
 
     private static final String ARG_PARAM1 = "param1";
     private static final String ARG_PARAM2 = "param2";
+    public List<Song> songList = new ArrayList<>();
+    public SongListMessage songListMessage;
+    private Boolean mBound;
+    private MusicService mService;
 
     private String mParam1;
     private String mParam2;
@@ -95,14 +108,76 @@ public class SongFragment extends Fragment {
                         null,
                         null,
                         null);
+        /**
+         * 가져온 Audio 정보 SongList에 담기
+         */
+        while (cursor.moveToNext()) {
+            Song song = getSongFromCursor(cursor);
+            // 오디오 파일 정보 출력 (예시)
+            songList.add(song);
+        }
+        // 서비스로 List<Song>을 넘겨주기 위한 Wrapper용 객체
+        songListMessage = new SongListMessage(songList);
 
         SongRecyclerAdapter adapter = new SongRecyclerAdapter(getActivity(), cursor);
         recyclerView.setAdapter(adapter);
+    }
 
+    @Override
+    public void onStart() {
+        super.onStart();
+        // Bind to LocalService
+        Intent intent = new Intent(getActivity(), MusicService.class);
+        getActivity().bindService(intent, connection, Context.BIND_AUTO_CREATE);
+    }
+
+    @Override
+    public void onStop() {
+        super.onStop();
+        getActivity().unbindService(connection);
+        mBound = false;
+    }
+
+    /** Defines callbacks for service binding, passed to bindService() */
+    private ServiceConnection connection = new ServiceConnection() {
+        @Override
+        public void onServiceConnected(ComponentName className, IBinder service) {
+            // We've bound to LocalService, cast the IBinder and get LocalService instance
+            MusicService.LocalBinder binder = (MusicService.LocalBinder) service;
+            mService = binder.getService();
+            mBound = true;
+        }
+
+        @Override
+        public void onServiceDisconnected(ComponentName arg0) {
+            mBound = false;
+        }
+    };
+
+    /**
+     * Cursor로 부터 Song 객체를 얻어온다.
+     */
+    private Song getSongFromCursor(Cursor cursor){
+        // 오디오 파일 정보 추출
+        @SuppressLint("Range") String audioId = cursor.getString(cursor.getColumnIndex(MediaStore.Audio.Media._ID));
+        @SuppressLint("Range") String title = cursor.getString(cursor.getColumnIndex(MediaStore.Audio.Media.TITLE));
+        @SuppressLint("Range") String artist = cursor.getString(cursor.getColumnIndex(MediaStore.Audio.Media.ARTIST));
+        @SuppressLint("Range") int duration = cursor.getInt(cursor.getColumnIndex(MediaStore.Audio.Media.DURATION));
+        @SuppressLint("Range") String filePath = cursor.getString(cursor.getColumnIndex(MediaStore.Audio.Media.DATA));
+
+        Uri uri = Uri.parse(filePath);
+
+        MediaMetadataRetriever retriever = new MediaMetadataRetriever();
+        retriever.setDataSource(getActivity(), uri);
+        byte imageData[] = retriever.getEmbeddedPicture();
+
+        title = (title == null ? "타이틀" : title);
+        artist = "<unknown>".equals(artist) ? "[아티스트 없음]" : artist;
+
+        return new Song(audioId, title, artist, imageData, duration, uri);
     }
 
     private class SongRecyclerAdapter extends CursorRecyclerViewAdapter<SongRecyclerAdapter.ViewHolder> {
-
         private Context mContext;
 
         public SongRecyclerAdapter(Context context, Cursor cursor) {
@@ -121,43 +196,22 @@ public class SongFragment extends Fragment {
 
         @Override
         public void onBindViewHolder(ViewHolder viewHolder, Cursor cursor) {
-            int uriIndex = cursor.getColumnIndexOrThrow(MediaStore.Images.Media.DATA);
-            String uriString = cursor.getString(uriIndex);
-            final Uri uri = Uri.parse(uriString);
+            @SuppressLint("Range") String audioId = cursor.getString(cursor.getColumnIndex(MediaStore.Audio.Media._ID));
+            Song song = songList.stream().filter(s->s.getAudioId().equals(audioId)).findAny().orElse(null);
 
-            MediaMetadataRetriever retriever = new MediaMetadataRetriever();
-            retriever.setDataSource(mContext, uri);
+            viewHolder.textViewTitle.setText(song.title);
+            viewHolder.textViewArtist.setText(song.artist);
 
-            @SuppressLint("Range") String title = cursor.getString(cursor.getColumnIndex(MediaStore.Audio.Media.TITLE));
-            @SuppressLint("Range") String artist = cursor.getString(cursor.getColumnIndex(MediaStore.Audio.Media.ARTIST));
-            @SuppressLint("Range") long mDuration = cursor.getLong(cursor.getColumnIndex(MediaStore.Audio.Media.DURATION));
-
-            title = (title == null ? "타이틀" : title);
-            artist = "<unknown>".equals(artist) ? "[아티스트 없음]" : artist;
-
-            // 미디어 정보
-//            String title = retriever.extractMetadata(MediaMetadataRetriever.METADATA_KEY_TITLE);
-//            String artist = retriever.extractMetadata(MediaMetadataRetriever.METADATA_KEY_ARTIST);
-//            String duration = retriever.extractMetadata(MediaMetadataRetriever.METADATA_KEY_DURATION);
-
-            // 오디오 앨범 이미지
-            byte imageData[] = retriever.getEmbeddedPicture();
-//            if(albumImage != null){
-//                Bitmap bitmap = BitmapFactory.decodeByteArray(albumImage, 0 , albumImage.length);
-//            }
-
-            viewHolder.textViewTitle.setText(title);
-            viewHolder.textViewArtist.setText(artist);
-
-            String finalArtist = artist;
-            String finalTitle = title;
             viewHolder.itemView.setOnClickListener(new View.OnClickListener() {
                 @Override
                 public void onClick(View view) {
                     Intent intent = new Intent(mContext, MusicService.class);
                     intent.setAction(MusicService.ACTION_PLAY);
-                    Song song = new Song(finalTitle, finalArtist, imageData, mDuration, uri);
                     intent.putExtra("song", (Parcelable) song);
+                    // songList는 1번만 보낸다.
+                    if(mService != null && mService.songList == null ){
+                        intent.putExtra("songList", (Parcelable) songListMessage);
+                    }
                     mContext.startService(intent);
                 }
             });
