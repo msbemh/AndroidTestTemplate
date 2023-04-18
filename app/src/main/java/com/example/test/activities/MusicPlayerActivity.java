@@ -14,6 +14,7 @@ import androidx.viewpager2.adapter.FragmentStateAdapter;
 import androidx.viewpager2.widget.ViewPager2;
 
 import android.Manifest;
+import android.app.ActivityManager;
 import android.content.pm.PackageManager;
 import android.media.AudioManager;
 import android.media.MediaPlayer;
@@ -49,7 +50,8 @@ public class MusicPlayerActivity extends AppCompatActivity {
      * 필요한 권한
      */
     private static final String[] PERMISSIONS = {
-            Manifest.permission.READ_MEDIA_AUDIO
+            Manifest.permission.READ_MEDIA_AUDIO,
+            Manifest.permission.POST_NOTIFICATIONS
     };
 
     /**
@@ -127,6 +129,32 @@ public class MusicPlayerActivity extends AppCompatActivity {
             }
             tab.setText(title);
         }).attach();
+
+        /**
+         * 포그라운드 인지 확인용
+         */
+        ActivityManager manager = (ActivityManager) getSystemService(MusicPlayerActivity.this.ACTIVITY_SERVICE);
+        new Thread(new Runnable() {
+            @Override
+            public void run() {
+                try{
+                    while(true){
+                        Thread.sleep(1000);
+                        /**
+                         * 포그라운드 서비스인지 확인
+                         */
+                        for (ActivityManager.RunningServiceInfo service : manager.getRunningServices(Integer.MAX_VALUE)) {
+                            if (service.foreground) {
+                                // 현재 포그라운드 서비스가 실행 중입니다.
+                                Log.d(TAG, "현재 포그라운드!!!!");
+                            }
+                        }
+                    }
+                }catch (Exception e){
+
+                }
+            }
+        }).start();
 
 
     }

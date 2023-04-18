@@ -40,9 +40,11 @@ public class PlayerFragment extends Fragment {
     private MusicService mService;
     private boolean mBound = false;
     private FragmentPlayerBinding mBinding;
-    private Timer timer;
     private TimerTask timerTask;
     private Handler mHandler;
+
+    private final int MESSAGE_MUSIC_ING = 1;
+    private final int MESSAGE_MUSIC_END = 2;
 
     public PlayerFragment() {
         // Required empty public constructor
@@ -70,9 +72,15 @@ public class PlayerFragment extends Fragment {
             public void handleMessage(@NonNull Message msg) {
                 super.handleMessage(msg);
 
-                int currentPosition = mService.getMediaPlayer().getCurrentPosition();
-                mBinding.seekBar.setProgress(currentPosition);
-                mBinding.durationStartText.setText(getTimeFormat(currentPosition));
+                if(msg.what == MESSAGE_MUSIC_ING){
+                    int currentPosition = mService.getMediaPlayer().getCurrentPosition();
+                    mBinding.seekBar.setProgress(currentPosition);
+                    mBinding.durationStartText.setText(getTimeFormat(currentPosition));
+                }else if(msg.what == MESSAGE_MUSIC_END){
+                    mService.end();
+                    mBinding.seekBar.setProgress(0);
+                    mBinding.durationStartText.setText(getTimeFormat(0));
+                }
 
             }
         };
@@ -102,15 +110,11 @@ public class PlayerFragment extends Fragment {
 
                 }
             }
-
             @Override
             public void onStartTrackingTouch(SeekBar seekBar) {
-
             }
-
             @Override
             public void onStopTrackingTouch(SeekBar seekBar) {
-
             }
         });
     }
@@ -132,11 +136,13 @@ public class PlayerFragment extends Fragment {
         mBound = false;
     }
 
-    /** Defines callbacks for service binding, passed to bindService() */
+    /**
+     * Defines callbacks for service binding, passed to bindService()
+     */
     private ServiceConnection connection = new ServiceConnection() {
         @Override
         public void onServiceConnected(ComponentName className, IBinder service) {
-            // We've bound to LocalService, cast the IBinder and get LocalService instance
+            // We've bound to MusicService, cast the IBinder and get MusicService instance
             MusicService.LocalBinder binder = (MusicService.LocalBinder) service;
             mService = binder.getService();
             mBound = true;
@@ -154,16 +160,16 @@ public class PlayerFragment extends Fragment {
     @Subscribe
     public void updateUI(Boolean isPlaying){
         Song song = mService.mSong;
-        if(isPlaying){
+        if(mService.getMediaPlayer() != null && mService.mSong != null){
             // 이미지 보여주기
             byte[] imageData = song.imageData;
             if(imageData != null){
                 Glide.with(this).load(imageData).into(mBinding.imageView);
             }else{
-                Glide.with(this).load(R.mipmap.ic_launcher).into(mBinding.imageView);
+                Glide.with(this).load(R.drawable.default_music_background).into(mBinding.imageView);
             }
 
-           // int duration = Long.valueOf(song.duration).intValue();
+            // int duration = Long.valueOf(song.duration).intValue();
             int duration = mService.getMediaPlayer().getDuration();
             // 재생시간 보여주기
             mBinding.durationEndText.setText(getTimeFormat(duration));
@@ -172,21 +178,19 @@ public class PlayerFragment extends Fragment {
             // SeekBar 세팅
             mBinding.seekBar.setMax(duration);
 
-            // SeekBar 이동
-            if(timer == null){
-                timerStart();
-            }else{
-                timer.cancel();
-                timerStart();
+            // 정지상태였고, SeekBar Position이 있었다면 UI 적용
+            if(!mService.isPlaying() && mService.mPosition != 0){
+                mBinding.seekBar.setProgress(mService.mPosition);
+                mBinding.durationStartText.setText(getTimeFormat(mService.mPosition));
             }
 
-//            TimerTask task = new TimerTask() {
-//                @Override
-//                public void run() {
-//                    mBinding.seekBar.setProgress(mService.getMediaPlayer().getCurrentPosition());
-//                }
-//            };
-//            new Timer().scheduleAtFixedRate(task, 0l, 3000);
+            // SeekBar 이동 Timer
+            if(mService.mTimer == null){
+                timerStart();
+            }else{
+                mService.mTimer.cancel();
+                timerStart();
+            }
         }
     }
 
@@ -197,11 +201,14 @@ public class PlayerFragment extends Fragment {
     }
 
     private void timerStart(){
-        timer = new Timer();
+        mService.mTimer = new Timer();
         timerTask = new TimerTask() {
             @Override
             public void run() {
-                if(!mService.isPlaying()) return;
+                // 음악이 중지(or 끝난) 상태일 경우 무시
+                if(!mService.isPlaying()) {
+                    return;
+                }
 
                 int currentPosition = mService.getMediaPlayer().getCurrentPosition();
                 Log.d(TAG, "currentPosition:" + currentPosition);
@@ -210,21 +217,25 @@ public class PlayerFragment extends Fragment {
                  * Main Thread Handler 로 보내기 위한 Message
                  */
                 Message message = mHandler.obtainMessage();
-                message.what = 1;
+                message.what = MESSAGE_MUSIC_ING;
                 mHandler.sendMessage(message);
 
                 /**
                  * 음악 재생이 다 끝나면 중지
+                 * 1000 을 뺸 이유
+                 * 노래가 끝나도 max duration 과 current duration 값이 맞지 않아서
+                 * 여유값으로 넣어줌
                  */
-                if(currentPosition >= mService.getMediaPlayer().getDuration() ){
+                if(currentPosition >= mService.getMediaPlayer().getDuration() - 1000){
                     cancel();
-                    mService.release();
-                    mBinding.seekBar.setProgress(0);
+                    Message message2 = mHandler.obtainMessage();
+                    message2.what = MESSAGE_MUSIC_END;
+                    mHandler.sendMessage(message2);
                 }
             }
         };
-        // 5초 후에 타이머 작업을 실행합니다.
-        timer.schedule(timerTask,0, 1000);
+        // 바로 시작 하고, 1초 마다 반복 작업 실행
+        mService.mTimer.schedule(timerTask,0, 1000);
     }
 
 

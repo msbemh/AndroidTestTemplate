@@ -10,35 +10,10 @@
         android:layout_margin="10dp"
         android:id="@+id/imageView"
         android:layout_width="match_parent"
+        android:scaleType="centerCrop"
         android:layout_height="0dp"
         android:layout_weight="1"
-        android:src="@mipmap/ic_launcher" />
-
-    <LinearLayout
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:orientation="horizontal">
-        <Button
-            android:text="계속 재생"
-            android:layout_margin="2dp"
-            android:layout_width="0dp"
-            android:layout_height="wrap_content"
-            android:layout_weight="1" />
-        <Button
-            android:text="즐겨 찾기"
-            android:layout_margin="2dp"
-            android:layout_width="0dp"
-            android:layout_height="wrap_content"
-            android:layout_weight="1" />
-        <Button
-            android:text="공유"
-            android:layout_margin="2dp"
-            android:layout_width="0dp"
-            android:layout_height="wrap_content"
-            android:layout_weight="1" />
-
-    </LinearLayout>
-
+        android:src="@drawable/default_music_background" />
     <SeekBar
         android:id="@+id/seekBar"
         android:layout_width="match_parent"

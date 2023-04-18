@@ -11,6 +11,7 @@ import androidx.annotation.Nullable;
 import androidx.fragment.app.Fragment;
 
 import android.os.IBinder;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -20,6 +21,8 @@ import android.widget.TextView;
 
 import com.bumptech.glide.Glide;
 import com.example.test.R;
+import com.example.test.databinding.ActivityCustomDialogBinding;
+import com.example.test.databinding.FragmentMusicControllerBinding;
 import com.example.test.models.Song;
 import com.example.test.services.MusicService;
 
@@ -27,16 +30,13 @@ import org.greenrobot.eventbus.EventBus;
 import org.greenrobot.eventbus.Subscribe;
 
 public class MusicControllerFragment extends Fragment implements View.OnClickListener {
-
+    private static final String TAG = MusicControllerFragment.class.getSimpleName();
     private static final String ARG_PARAM1 = "param1";
     private static final String ARG_PARAM2 = "param2";
 
     private String mParam1;
     private String mParam2;
-    private ImageView mAlbumImageView;
-    private TextView mTitleTextView;
-    private TextView mArtistTextView;
-    private Button mPlayButton;
+    private FragmentMusicControllerBinding mBinding;
 
     MusicService mService;
     boolean mBound = false;
@@ -67,18 +67,17 @@ public class MusicControllerFragment extends Fragment implements View.OnClickLis
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
         // Inflate the layout for this fragment
-        return inflater.inflate(R.layout.fragment_music_controller, container, false);
+        mBinding = FragmentMusicControllerBinding.inflate(getLayoutInflater());
+        return mBinding.getRoot();
     }
 
     @Override
     public void onViewCreated(@NonNull View view, @Nullable Bundle savedInstanceState) {
         super.onViewCreated(view, savedInstanceState);
 
-        mAlbumImageView = (ImageView) view.findViewById(R.id.album_image);
-        mTitleTextView = (TextView) view.findViewById(R.id.title_text);
-        mArtistTextView = (TextView) view.findViewById(R.id.artist_text);
-        mPlayButton = (Button) view.findViewById((R.id.play_button));
-        mPlayButton.setOnClickListener(this);
+        mBinding.playButton.setOnClickListener(this);
+        mBinding.prevButton.setOnClickListener(this);
+        mBinding.nextButton.setOnClickListener(this);
     }
 
     public void updateMetadata(Song song){
@@ -92,19 +91,23 @@ public class MusicControllerFragment extends Fragment implements View.OnClickLis
         byte[] imageData = song.imageData;
 
         if(imageData != null){
-            Glide.with(this).load(imageData).into(mAlbumImageView);
+            Glide.with(this).load(imageData).into(mBinding.albumImage);
         }else{
-            Glide.with(this).load(R.mipmap.ic_launcher).into(mAlbumImageView);
+            Glide.with(this).load(R.mipmap.ic_launcher).into(mBinding.albumImage);
         }
 
-        mTitleTextView.setText(title);
-        mArtistTextView.setText(artist);
+        mBinding.titleText.setText(title);
+        mBinding.artistText.setText(artist);
     }
 
     @Subscribe
     public void updateUI(Boolean isPlaying){
+        // 선택된 노래가 있다면, Visible
+        if(mService.mSong != null){
+            getView().setVisibility(View.VISIBLE);
+        }
         // 버튼 텍스트 변경
-        mPlayButton.setText(isPlaying ? "중지" : "재생");
+        mBinding.playButton.setImageResource(isPlaying ? R.drawable.pause : R.drawable.play);
         // Song 메타 데이터 변경
         updateMetadata(mService.mSong);
     }
@@ -146,10 +149,21 @@ public class MusicControllerFragment extends Fragment implements View.OnClickLis
     };
 
     /**
+     * onClickListener 구현
      * 재생 버튼 클릭
      */
     @Override
     public void onClick(View view) {
-        mService.resumeMusic();
+        switch(view.getId()){
+            case R.id.play_button:
+                mService.resumeMusic();
+                break;
+            case R.id.prev_button:
+                mService.prevMusic();
+                break;
+            case R.id.next_button:
+                mService.nextMusic();
+                break;
+        }
     }
 }

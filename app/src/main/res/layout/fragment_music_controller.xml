@@ -4,6 +4,8 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:orientation="horizontal"
+    android:visibility="gone"
+    android:gravity="center_vertical"
     tools:context=".fragments.MusicControllerFragment">
 
     <ImageView
@@ -36,24 +38,26 @@
             android:layout_height="match_parent"/>
     </LinearLayout>
 
-    <Button
-        android:text="앞곡"
-        android:textSize="12sp"
+    <ImageView
+        android:id="@+id/prev_button"
+        android:src="@drawable/prev"
         android:layout_margin="2dp"
-        android:layout_width="70dp"
-        android:layout_height="wrap_content" />
-    <Button
+        android:layout_width="30dp"
+        android:scaleType="centerCrop"
+        android:layout_height="30dp" />
+    <ImageView
         android:id="@+id/play_button"
-        android:text="재생"
-        android:textSize="12sp"
+        android:src="@drawable/play"
         android:layout_margin="2dp"
-        android:layout_width="70dp"
-        android:layout_height="wrap_content" />
-    <Button
-        android:text="다음곡"
-        android:textSize="12sp"
+        android:layout_width="30dp"
+        android:scaleType="centerCrop"
+        android:layout_height="30dp" />
+    <ImageView
+        android:id="@+id/next_button"
+        android:src="@drawable/next"
+        android:scaleType="centerCrop"
         android:layout_margin="2dp"
-        android:layout_width="70dp"
-        android:layout_height="wrap_content" />
+        android:layout_width="30dp"
+        android:layout_height="30dp" />
 
 </LinearLayout>
