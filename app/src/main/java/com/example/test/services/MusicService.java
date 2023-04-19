@@ -1,6 +1,7 @@
 package com.example.test.services;
 
 import android.Manifest;
+import android.annotation.SuppressLint;
 import android.app.Notification;
 import android.app.NotificationChannel;
 import android.app.NotificationManager;
@@ -10,6 +11,7 @@ import android.content.Intent;
 import android.content.pm.PackageManager;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
+import android.graphics.ImageDecoder;
 import android.media.AudioManager;
 import android.media.MediaPlayer;
 import android.media.RingtoneManager;
@@ -17,7 +19,11 @@ import android.net.Uri;
 import android.os.Binder;
 import android.os.Build;
 import android.os.IBinder;
+import android.provider.MediaStore;
 import android.util.Log;
+import android.view.LayoutInflater;
+import android.view.View;
+import android.widget.RemoteViews;
 import android.widget.Toast;
 
 import androidx.annotation.Nullable;
@@ -25,6 +31,8 @@ import androidx.core.app.ActivityCompat;
 import androidx.core.app.NotificationCompat;
 import androidx.core.app.NotificationManagerCompat;
 
+import com.bumptech.glide.Glide;
+import com.bumptech.glide.request.target.NotificationTarget;
 import com.example.test.R;
 import com.example.test.activities.MusicPlayerActivity;
 import com.example.test.fragments.PlayerFragment;
@@ -33,6 +41,7 @@ import com.example.test.models.SongListMessage;
 
 import org.greenrobot.eventbus.EventBus;
 
+import java.io.File;
 import java.io.IOException;
 import java.util.List;
 import java.util.Timer;
@@ -232,10 +241,30 @@ public class MusicService extends Service {
             //안드로이드 O버전 이상에서는 알림창을 띄워야 포그라운드 사용 가능
             createNotificationChannel();
 
+            /**
+             * 맞춤 레이아웃 만들기
+             */
+//            NotificationSmallBinding binding = NotificationSmallBinding.inflate(LayoutInflater.from(this));
+            RemoteViews notificationLayout = new RemoteViews(getPackageName(), R.layout.notification_small);
+            notificationLayout.setTextViewText(R.id.title_view, mSong.title);
+            notificationLayout.setTextViewText(R.id.content_view, mSong.title);
+            notificationLayout.setProgressBar(R.id.seekBar, 100, 0, false); // SeekBar 추가
+//            RemoteViews notificationLayoutExpanded = new RemoteViews(getPackageName(), R.layout.notification_large);
+
+
+
+           // notificationLayout.setImageViewUri(R.id.album_image, mSong.uri);
+
+
+
+
+
             NotificationCompat.Builder builder = new NotificationCompat.Builder(this, CHANNEL_ID);
             builder.setContentTitle(mSong.title);
             builder.setContentText(mSong.artist);
             builder.setSmallIcon(R.mipmap.ic_launcher);
+            //.setCustomBigContentView(notificationLayoutExpanded)
+            builder.setCustomContentView(notificationLayout);
 
             // Bitmap
             Bitmap bitmap = BitmapFactory.decodeResource(
@@ -279,7 +308,25 @@ public class MusicService extends Service {
             // 알림표시
             //NotificationManagerCompat notificationManager = NotificationManagerCompat.from(this);
             //notificationManager.notify(notificationId, builder.build());
-            startForeground(notificationId, builder.build());
+
+            Notification notification = builder.build();
+
+            /**
+             * [알림]
+             * 이미지 Glide를 이용하여 추가
+             */
+            NotificationTarget notificationTarget = new NotificationTarget(
+                    this,
+                    R.id.album_image,
+                    notificationLayout,
+                    notification,
+                    notificationId);
+            Glide.with(this)
+                    .asBitmap()
+                    .load(mSong.imageData)
+                    .into(notificationTarget);
+
+            startForeground(notificationId, notification);
         }
     }
 
