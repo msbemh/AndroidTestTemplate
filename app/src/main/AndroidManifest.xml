@@ -27,7 +27,8 @@
 
         <activity
             android:name=".activities.MusicPlayerActivity"
-            android:exported="false" />
+            android:exported="false">
+        </activity>
         <activity
             android:name=".activities.ModernBackgroundActivity"
             android:exported="false" />
@@ -43,6 +44,15 @@
                 <action android:name="android.intent.action.ACTION_POWER_CONNECTED" />
             </intent-filter>
         </receiver>
+        <receiver
+            android:name=".receivers.MusicReceiver"
+            android:enabled="true"
+            android:exported="true">
+            <intent-filter>
+                <action android:name="ACTION_MUSIC_RESUME" />
+            </intent-filter>
+        </receiver>
+
 
         <activity
             android:name=".activities.GalleryActivity"

@@ -15,6 +15,7 @@ import androidx.viewpager2.widget.ViewPager2;
 
 import android.Manifest;
 import android.app.ActivityManager;
+import android.content.Intent;
 import android.content.pm.PackageManager;
 import android.media.AudioManager;
 import android.media.MediaPlayer;
@@ -26,6 +27,7 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.TextView;
 
+import com.example.test.MainActivity;
 import com.example.test.R;
 import com.example.test.fragments.ArtistFragment;
 import com.example.test.fragments.GalleryFragment;
@@ -51,7 +53,8 @@ public class MusicPlayerActivity extends AppCompatActivity {
      */
     private static final String[] PERMISSIONS = {
             Manifest.permission.READ_MEDIA_AUDIO,
-            Manifest.permission.POST_NOTIFICATIONS
+            Manifest.permission.POST_NOTIFICATIONS,
+            Manifest.permission.FOREGROUND_SERVICE
     };
 
     /**
@@ -94,6 +97,9 @@ public class MusicPlayerActivity extends AppCompatActivity {
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+
+        Log.d(TAG, "MusicPlayerActivity onDestroy");
+
         setContentView(R.layout.activity_music_player);
 
         /**
@@ -133,30 +139,44 @@ public class MusicPlayerActivity extends AppCompatActivity {
         /**
          * 포그라운드 인지 확인용
          */
-        ActivityManager manager = (ActivityManager) getSystemService(MusicPlayerActivity.this.ACTIVITY_SERVICE);
-        new Thread(new Runnable() {
-            @Override
-            public void run() {
-                try{
-                    while(true){
-                        Thread.sleep(1000);
-                        /**
-                         * 포그라운드 서비스인지 확인
-                         */
-                        for (ActivityManager.RunningServiceInfo service : manager.getRunningServices(Integer.MAX_VALUE)) {
-                            if (service.foreground) {
-                                // 현재 포그라운드 서비스가 실행 중입니다.
-                                Log.d(TAG, "현재 포그라운드!!!!");
-                            }
-                        }
-                    }
-                }catch (Exception e){
+//        ActivityManager manager = (ActivityManager) getSystemService(MusicPlayerActivity.this.ACTIVITY_SERVICE);
+//        new Thread(new Runnable() {
+//            @Override
+//            public void run() {
+//                try{
+//                    while(true){
+//                        Thread.sleep(1000);
+//                        /**
+//                         * 포그라운드 서비스인지 확인
+//                         */
+//                        for (ActivityManager.RunningServiceInfo service : manager.getRunningServices(Integer.MAX_VALUE)) {
+//                            if (service.foreground) {
+//                                // 현재 포그라운드 서비스가 실행 중입니다.
+////                                Log.d(TAG, "현재 포그라운드!!!!");
+//                            }
+//                        }
+//                    }
+//                }catch (Exception e){
+//
+//                }
+//            }
+//        }).start();
+    }
 
-                }
-            }
-        }).start();
+    @Override
+    public void onBackPressed() {
+        Log.d(TAG, "뒤로가기");
+        super.onBackPressed();
+        Intent intent = new Intent(this, MainActivity.class);
+        intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
+        startActivity(intent);
+        finish();
+    }
 
-
+    @Override
+    protected void onDestroy() {
+        super.onDestroy();
+        Log.d(TAG, "MusicPlayerActivity onDestroy");
     }
 
     public class MyPagerAdapter extends FragmentStateAdapter {
