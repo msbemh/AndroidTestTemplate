@@ -7,8 +7,12 @@
     <uses-permission android:name="android.permission.WRITE_EXTERNAL_STORAGE" />
     <uses-permission android:name="android.permission.READ_MEDIA_AUDIO" />
     <uses-permission android:name="android.permission.READ_MEDIA_IMAGES" />
-    <uses-permission android:name="android.permission.FOREGROUND_SERVICE"/>
-    <uses-permission android:name="android.permission.POST_NOTIFICATIONS"/>
+    <uses-permission android:name="android.permission.FOREGROUND_SERVICE" />
+    <uses-permission android:name="android.permission.POST_NOTIFICATIONS" />
+    <uses-permission android:name="android.permission.MEDIA_PROJECTION" />
+    <uses-permission android:name="android.permission.DETECT_SCREEN_CAPTURE" />
+    <uses-permission android:name="android.permission.INTERNET" />
+    <uses-permission android:name="android.permission.CAMERA"/>
 
     <application
         android:name=".MyApplication"
@@ -20,15 +24,31 @@
         android:supportsRtl="true"
         android:theme="@style/Theme.Test"
         tools:targetApi="31">
+        <activity
+            android:name=".activities.CaptureActivity"
+            android:exported="false" />
+        <activity
+            android:name=".activities.SharedPreferenceActivity"
+            android:exported="false" />
+        <activity
+            android:name=".activities.LiveDataTestActivity2"
+            android:exported="false" />
+        <activity
+            android:name=".activities.LiveDataTestActivity"
+            android:exported="false" />
+
+        <service
+            android:name=".services.MyMediaProjectionService"
+            android:enabled="true"
+            android:exported="true" />
         <service
             android:name=".services.MusicService"
             android:enabled="true"
-            android:exported="true"></service>
+            android:exported="true" />
 
         <activity
             android:name=".activities.MusicPlayerActivity"
-            android:exported="false">
-        </activity>
+            android:exported="false" />
         <activity
             android:name=".activities.ModernBackgroundActivity"
             android:exported="false" />
@@ -42,6 +62,10 @@
             android:exported="true">
             <intent-filter>
                 <action android:name="android.intent.action.ACTION_POWER_CONNECTED" />
+                <action android:name="android.intent.action.MEDIA_SCANNER_SCAN_FILE" />
+
+                <data android:scheme="file" />
+                <data android:mimeType="image/*" />
             </intent-filter>
         </receiver>
         <receiver
@@ -52,7 +76,6 @@
                 <action android:name="ACTION_MUSIC_RESUME" />
             </intent-filter>
         </receiver>
-
 
         <activity
             android:name=".activities.GalleryActivity"

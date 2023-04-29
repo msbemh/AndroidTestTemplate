@@ -16,7 +16,6 @@ public class MyApplication extends Application {
      * (not always the same as the maximum number of cores)
      */
     private static int NUMBER_OF_CORES = Runtime.getRuntime().availableProcessors();
-
     public ExecutorService executorService = Executors.newFixedThreadPool(NUMBER_OF_CORES);
     public Handler mainThreadHandler = HandlerCompat.createAsync(Looper.getMainLooper());
 

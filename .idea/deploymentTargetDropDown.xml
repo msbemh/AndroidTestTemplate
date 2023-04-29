@@ -6,23 +6,12 @@
         <type value="RUNNING_DEVICE_TARGET" />
         <deviceKey>
           <Key>
-            <type value="VIRTUAL_DEVICE_PATH" />
-            <value value="C:\Users\Song\.android\avd\Nexus_5_API_33_1.avd" />
+            <type value="SERIAL_NUMBER" />
+            <value value="R3CT40SZNZZ" />
           </Key>
         </deviceKey>
       </Target>
     </runningDeviceTargetSelectedWithDropDown>
-    <targetSelectedWithDropDown>
-      <Target>
-        <type value="QUICK_BOOT_TARGET" />
-        <deviceKey>
-          <Key>
-            <type value="VIRTUAL_DEVICE_PATH" />
-            <value value="C:\Users\Song\.android\avd\Nexus_5_API_33_1.avd" />
-          </Key>
-        </deviceKey>
-      </Target>
-    </targetSelectedWithDropDown>
-    <timeTargetWasSelectedWithDropDown value="2023-04-19T02:42:27.140296500Z" />
+    <timeTargetWasSelectedWithDropDown value="2023-04-29T05:25:34.225701Z" />
   </component>
 </project>

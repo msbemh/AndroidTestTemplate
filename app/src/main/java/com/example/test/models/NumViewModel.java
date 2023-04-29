@@ -15,7 +15,6 @@ import com.example.test.repository.NumberRepository;
 import com.example.test.repository.Result;
 
 public class NumViewModel extends AndroidViewModel {
-
     private final NumberRepository repository;
 
     public MutableLiveData<Integer> progressLiveData = new MutableLiveData<>(0);

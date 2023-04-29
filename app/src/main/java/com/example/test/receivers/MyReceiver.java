@@ -15,6 +15,8 @@ public class MyReceiver extends BroadcastReceiver {
     public void onReceive(Context context, Intent intent) {
         if(Intent.ACTION_POWER_CONNECTED.equals(intent.getAction())){
             Log.d(TAG, "전원 연결 됨");
+        }else if(Intent.ACTION_MEDIA_SCANNER_SCAN_FILE.equals(intent.getAction()) ){
+            Log.d(TAG, "화면 캡처");
         }
     }
 }
