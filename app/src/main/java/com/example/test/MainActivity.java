@@ -22,6 +22,7 @@ import android.widget.Toast;
 
 import com.example.test.activities.AsyncTaskActivity;
 import com.example.test.activities.CaptureActivity;
+import com.example.test.activities.CaverJavaTestActivity;
 import com.example.test.activities.CustomDialogActivity;
 import com.example.test.activities.FragmentActivity;
 import com.example.test.activities.GalleryActivity;
@@ -29,6 +30,7 @@ import com.example.test.activities.LiveDataTestActivity;
 import com.example.test.activities.MemoListActivity;
 import com.example.test.activities.ModernBackgroundActivity;
 import com.example.test.activities.MusicPlayerActivity;
+import com.example.test.activities.NinePatchTestActivity;
 import com.example.test.activities.ReceiverActivity;
 import com.example.test.activities.RecyclerViewTestActivity;
 import com.example.test.activities.RecyclerViewTestActivity2;
@@ -71,6 +73,8 @@ public class MainActivity extends AppCompatActivity {
         addItem("라이브 데이터 테스트", "Live Data Test", LiveDataTestActivity.class);
         addItem("SharedPreference", "SharedPreference", SharedPreferenceActivity.class);
         addItem("캡처 테스트", "캡처 테스트", CaptureActivity.class);
+        addItem("9 patch 테스트", "9 patch 테스트", NinePatchTestActivity.class);
+        addItem("Caver Java Test", "Caver Java Test", CaverJavaTestActivity.class);
 
         Collections.reverse(mMenuList);
 

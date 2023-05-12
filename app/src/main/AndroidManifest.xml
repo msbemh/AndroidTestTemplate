@@ -12,7 +12,7 @@
     <uses-permission android:name="android.permission.MEDIA_PROJECTION" />
     <uses-permission android:name="android.permission.DETECT_SCREEN_CAPTURE" />
     <uses-permission android:name="android.permission.INTERNET" />
-    <uses-permission android:name="android.permission.CAMERA"/>
+    <uses-permission android:name="android.permission.CAMERA" />
 
     <application
         android:name=".MyApplication"
@@ -24,6 +24,12 @@
         android:supportsRtl="true"
         android:theme="@style/Theme.Test"
         tools:targetApi="31">
+        <activity
+            android:name=".activities.CaverJavaTestActivity"
+            android:exported="false" />
+        <activity
+            android:name=".activities.NinePatchTestActivity"
+            android:exported="false" />
         <activity
             android:name=".activities.CaptureActivity"
             android:exported="false" />
@@ -128,6 +134,10 @@
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
         </activity>
+
+        <meta-data
+            android:name="com.google.mlkit.vision.DEPENDENCIES"
+            android:value="ocr" />
     </application>
 
 </manifest>

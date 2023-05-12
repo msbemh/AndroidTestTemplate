@@ -1,6 +1,8 @@
 plugins {
     id 'com.android.application'
     id 'org.jetbrains.kotlin.android' version '1.8.0'   // 코틀린 추가
+    // Add the Google services Gradle plugin
+    id 'com.google.gms.google-services'
 }
 
 android {
@@ -95,5 +97,18 @@ dependencies {
     implementation 'com.fasterxml.jackson.core:jackson-databind:2.14.2'
     implementation 'com.fasterxml.jackson.datatype:jackson-datatype-jsr310:2.14.2'
 
-    implementation 'com.google.cloud:google-cloud-vision:3.13.0'
+    // Import the BoM for the Firebase platform
+    implementation platform('com.google.firebase:firebase-bom:31.4.0')
+
+    // Add the dependency for the Firebase Authentication library
+    // When using the BoM, you don't specify versions in Firebase library dependencies
+    implementation 'com.google.firebase:firebase-auth'
+
+    implementation 'com.google.firebase:firebase-functions:20.2.2'
+    implementation 'com.google.code.gson:gson:2.8.6'
+
+    implementation 'com.google.android.gms:play-services-mlkit-text-recognition:18.0.2'
+
+    implementation 'com.klaytn.caver:core:1.5.4-android'
+
 }
